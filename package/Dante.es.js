@@ -1,23 +1,93 @@
+import Immutable, { Map as Map$1 } from 'immutable';
+import { EditorState, ContentBlock, genKey, ContentState, convertFromHTML, getSafeBodyFromHTML, convertToRaw, convertFromRaw, CompositeDecorator, getDefaultKeyBinding, Editor, Entity, RichUtils, DefaultDraftBlockRenderMap, SelectionState, Modifier, getVisibleSelectionRect, EditorBlock } from 'draft-js';
+import React from 'react';
+import axios from 'axios';
+import { isEmpty, capitalize } from 'lodash';
 import { convertToHTML } from 'draft-convert';
 import createStyles from 'draft-js-custom-styles';
-import Immutable, { Map } from 'immutable';
-import { isEmpty, capitalize } from 'lodash';
 import ReactDOM from 'react-dom';
 import { SketchPicker } from 'react-color';
-import axios from 'axios';
 import Select from 'react-select';
-import _assertThisInitialized from '@babel/runtime/helpers/esm/assertThisInitialized';
-import _defineProperty from '@babel/runtime/helpers/esm/defineProperty';
 import Prism from 'prismjs';
 import PrismDecorator from 'draft-js-prism';
-import { EditorState, ContentBlock, genKey, ContentState, convertFromHTML, getSafeBodyFromHTML, convertToRaw, convertFromRaw, CompositeDecorator, getDefaultKeyBinding, Editor, Entity, RichUtils, DefaultDraftBlockRenderMap, SelectionState, Modifier, getVisibleSelectionRect, EditorBlock } from 'draft-js';
 import MultiDecorator from 'draft-js-multidecorators';
-import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
-import _createClass from '@babel/runtime/helpers/esm/createClass';
-import _possibleConstructorReturn from '@babel/runtime/helpers/esm/possibleConstructorReturn';
-import _getPrototypeOf from '@babel/runtime/helpers/esm/getPrototypeOf';
-import _inherits from '@babel/runtime/helpers/esm/inherits';
-import React from 'react';
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return _assertThisInitialized(self);
+}
 
 /*
 Used from [react-rte](https://github.com/brijeshb42/medium-draft)
@@ -155,7 +225,7 @@ var addNewBlockAt = function addNewBlockAt(editorState, pivotBlockKey) {
     text: '',
     characterList: block.getCharacterList().slice(0, 0),
     depth: 0,
-    data: Map(getDefaultBlockData(newBlockType, initialData))
+    data: Map$1(getDefaultBlockData(newBlockType, initialData))
   });
   var newBlockMap = blocksBefore.concat([[pivotBlockKey, block], [newBlockKey, newBlock]], blocksAfter).toOrderedMap();
   var selection = editorState.getSelection();
@@ -183,9 +253,9 @@ function (_React$Component) {
 
     _classCallCheck(this, Debug);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Debug).call(this));
+    _this = _possibleConstructorReturn(this, (Debug.__proto__ || Object.getPrototypeOf(Debug)).call(this));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleToggleReadOnly", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleToggleReadOnly", function (e) {
       e.preventDefault();
 
       _this.props.editor.toggleEditable();
@@ -193,17 +263,17 @@ function (_React$Component) {
       return false;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleTestEmitAndDecode", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleTestEmitAndDecode", function (e) {
       e.preventDefault();
       return _this.testEmitAndDecode();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleTestEmitTEXT", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleTestEmitTEXT", function (e) {
       e.preventDefault();
       return _this.testEmitTEXT();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "testEmitAndDecode", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "testEmitAndDecode", function (e) {
       var raw_as_json = _this.props.editor.emitSerializedOutput();
 
       _this.props.editor.setState({
@@ -213,19 +283,19 @@ function (_React$Component) {
       return false;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "testEmitTEXT", function () {
+    _defineProperty(_assertThisInitialized(_this), "testEmitTEXT", function () {
       var text = _this.props.editor.getTextFromEditor();
 
       return _this.logState(text);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "logState", function (raw) {
+    _defineProperty(_assertThisInitialized(_this), "logState", function (raw) {
       return _this.setState({
         output: raw
       }, _this.open);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleDisplay", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "toggleDisplay", function (e) {
       e.preventDefault();
       var d = _this.state.display === "block" ? "none" : _this.state.display;
       return _this.setState({
@@ -233,7 +303,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "open", function () {
+    _defineProperty(_assertThisInitialized(_this), "open", function () {
       return _this.setState({
         display: "block"
       });
@@ -566,9 +636,9 @@ function (_React$Component) {
 
     _classCallCheck(this, DanteEditor);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DanteEditor).call(this, props));
+    _this = _possibleConstructorReturn(this, (DanteEditor.__proto__ || Object.getPrototypeOf(DanteEditor)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initializeState", function () {
+    _defineProperty(_assertThisInitialized(_this), "initializeState", function () {
       var newEditorState = EditorState.createEmpty(_this.decorator);
 
       if (_this.props.content) {
@@ -580,12 +650,12 @@ function (_React$Component) {
       _this.onChange(newEditorState);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decodeEditorContent", function (raw_as_json) {
+    _defineProperty(_assertThisInitialized(_this), "decodeEditorContent", function (raw_as_json) {
       var new_content = convertFromRaw(raw_as_json);
       return EditorState.createWithContent(new_content, _this.decorator);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refreshSelection", function (newEditorState) {
+    _defineProperty(_assertThisInitialized(_this), "refreshSelection", function (newEditorState) {
       var editorState = _this.state.editorState; // Setting cursor position after inserting to content
 
       var s = editorState.getSelection();
@@ -602,13 +672,13 @@ function (_React$Component) {
       return _this.onChange(newState);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "forceRender", function (editorState) {
+    _defineProperty(_assertThisInitialized(_this), "forceRender", function (editorState) {
       var content = editorState.getCurrentContent();
       var newEditorState = EditorState.createWithContent(content, _this.decorator);
       return _this.refreshSelection(newEditorState);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onChange", function (editorState) {
+    _defineProperty(_assertThisInitialized(_this), "onChange", function (editorState) {
       //editorState = this.handleUndeletables(editorState)
       _this.setPreContent();
 
@@ -639,7 +709,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleUndeletables", function (editorState) {
+    _defineProperty(_assertThisInitialized(_this), "handleUndeletables", function (editorState) {
       // undeletable behavior, will keep previous blockMap 
       // if undeletables are deleted
       var undeletable_types = _this.props.widgets.filter(function (o) {
@@ -665,33 +735,33 @@ function (_React$Component) {
       return editorState;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dispatchChangesToSave", function () {
+    _defineProperty(_assertThisInitialized(_this), "dispatchChangesToSave", function () {
       clearTimeout(_this.saveTimeout);
       return _this.saveTimeout = setTimeout(function () {
         return _this.save.store(_this.emitSerializedOutput());
       }, 100);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPreContent", function () {
+    _defineProperty(_assertThisInitialized(_this), "setPreContent", function () {
       var content = _this.emitSerializedOutput();
 
       return _this.save.editorContent = content;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "focus", function () {} //debugger
+    _defineProperty(_assertThisInitialized(_this), "focus", function () {} //debugger
     //@props.refs.richEditor.focus()
     );
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getEditorState", function () {
+    _defineProperty(_assertThisInitialized(_this), "getEditorState", function () {
       return _this.state.editorState;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitSerializedOutput", function () {
+    _defineProperty(_assertThisInitialized(_this), "emitSerializedOutput", function () {
       var raw = convertToRaw(_this.state.editorState.getCurrentContent());
       return raw;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getTextFromEditor", function () {
+    _defineProperty(_assertThisInitialized(_this), "getTextFromEditor", function () {
       var c = _this.state.editorState.getCurrentContent();
 
       var out = c.getBlocksAsArray().map(function (o) {
@@ -700,7 +770,7 @@ function (_React$Component) {
       return out;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitHTML2", function () {
+    _defineProperty(_assertThisInitialized(_this), "emitHTML2", function () {
       return convertToHTML({
         entityToHTML: function entityToHTML(entity, originalText) {
           if (entity.type === 'LINK') {
@@ -712,25 +782,25 @@ function (_React$Component) {
       })(_this.state.editorState.getCurrentContent());
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getLocks", function () {
+    _defineProperty(_assertThisInitialized(_this), "getLocks", function () {
       return _this.state.locks;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "addLock", function () {
+    _defineProperty(_assertThisInitialized(_this), "addLock", function () {
       var locks = _this.state.locks;
       return _this.setState({
         locks: locks += 1
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "removeLock", function () {
+    _defineProperty(_assertThisInitialized(_this), "removeLock", function () {
       var locks = _this.state.locks;
       return _this.setState({
         locks: locks -= 1
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderableBlocks", function () {
+    _defineProperty(_assertThisInitialized(_this), "renderableBlocks", function () {
       return _this.props.widgets.filter(function (o) {
         return o.renderable;
       }).map(function (o) {
@@ -738,7 +808,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultWrappers", function (blockType) {
+    _defineProperty(_assertThisInitialized(_this), "defaultWrappers", function (blockType) {
       return _this.props.default_wrappers.filter(function (o) {
         return o.block === blockType;
       }).map(function (o) {
@@ -746,7 +816,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "blockRenderer", function (block) {
+    _defineProperty(_assertThisInitialized(_this), "blockRenderer", function (block) {
       /*switch (block.getType()) {
         case "atomic":
           const entity = block.getEntityAt(0)
@@ -760,7 +830,7 @@ function (_React$Component) {
       return null;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleBlockRenderer", function (block) {
+    _defineProperty(_assertThisInitialized(_this), "handleBlockRenderer", function (block) {
       var dataBlock = _this.getDataBlock(block);
 
       if (!dataBlock) {
@@ -783,14 +853,14 @@ function (_React$Component) {
           removeLock: _this.removeLock,
           getLocks: _this.getLocks,
           getEditor: function getEditor() {
-            return _assertThisInitialized(_assertThisInitialized(_this));
+            return _assertThisInitialized(_this);
           },
           config: dataBlock.options
         }
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "blockStyleFn", function (block) {
+    _defineProperty(_assertThisInitialized(_this), "blockStyleFn", function (block) {
       var currentBlock = getCurrentBlock(_this.state.editorState);
       if (!currentBlock) return;
       var is_selected = currentBlock.getKey() === block.getKey() ? "is-selected" : "";
@@ -808,13 +878,13 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getDataBlock", function (block) {
+    _defineProperty(_assertThisInitialized(_this), "getDataBlock", function (block) {
       return _this.props.widgets.find(function (o) {
         return o.type === block.getType();
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "styleForBlock", function (block, currentBlock, is_selected) {
+    _defineProperty(_assertThisInitialized(_this), "styleForBlock", function (block, currentBlock, is_selected) {
       var dataBlock = _this.getDataBlock(block);
 
       if (!dataBlock) {
@@ -827,7 +897,7 @@ function (_React$Component) {
       return "".concat(dataBlock.wrapper_class, " ").concat(selected_class_out, " ").concat(selectedFn);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleTooltipDisplayOn", function (prop, display) {
+    _defineProperty(_assertThisInitialized(_this), "handleTooltipDisplayOn", function (prop, display) {
       // for button click on after inline style set, 
       // avoids inline popver to reappear on previous selection
       if (_this.props.read_only) {
@@ -843,7 +913,7 @@ function (_React$Component) {
 
 
         return items.map(function (o) {
-          if (!_assertThisInitialized(_assertThisInitialized(_this)) || !_this.refs || !_this.refs[o.ref]) return;
+          if (!_assertThisInitialized(_this) || !_this.refs || !_this.refs[o.ref]) return;
 
           _this.refs[o.ref].display(display);
 
@@ -852,7 +922,7 @@ function (_React$Component) {
       }, 20);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handlePasteText", function (text, html) {
+    _defineProperty(_assertThisInitialized(_this), "handlePasteText", function (text, html) {
       // https://github.com/facebook/draft-js/issues/685
 
       /*
@@ -871,7 +941,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleTXTPaste", function (text, html) {
+    _defineProperty(_assertThisInitialized(_this), "handleTXTPaste", function (text, html) {
       var currentBlock = getCurrentBlock(_this.state.editorState);
       var editorState = _this.state.editorState;
 
@@ -896,7 +966,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleHTMLPaste", function (text, html) {
+    _defineProperty(_assertThisInitialized(_this), "handleHTMLPaste", function (text, html) {
       var currentBlock = getCurrentBlock(_this.state.editorState); // TODO: make this configurable
 
       switch (currentBlock.getType()) {
@@ -940,7 +1010,7 @@ function (_React$Component) {
       return true;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handlePasteImage", function (files) {
+    _defineProperty(_assertThisInitialized(_this), "handlePasteImage", function (files) {
       //TODO: check file types
       return files.map(function (file) {
         var opts = {
@@ -951,7 +1021,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleDroppedFiles", function (state, files) {
+    _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (state, files) {
       return files.map(function (file) {
         var opts = {
           url: URL.createObjectURL(file),
@@ -961,7 +1031,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleDrop", function (selection, dataTransfer, isInternal) {
+    _defineProperty(_assertThisInitialized(_this), "handleDrop", function (selection, dataTransfer, isInternal) {
       var editorState = _this.getEditorState();
 
       var raw = dataTransfer.data.getData('text');
@@ -972,19 +1042,19 @@ function (_React$Component) {
       return 'handled';
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleUpArrow", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleUpArrow", function (e) {
       return setTimeout(function () {
         return _this.forceRender(_this.state.editorState);
       }, 10);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleDownArrow", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleDownArrow", function (e) {
       return setTimeout(function () {
         return _this.forceRender(_this.state.editorState);
       }, 10);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleReturn", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleReturn", function (e) {
       if (_this.props.handleReturn) {
         if (_this.props.handleReturn()) {
           return true;
@@ -1010,7 +1080,7 @@ function (_React$Component) {
 
         if (currentBlock.getText().length === 0) {
           if (config_block && config_block.handleEnterWithoutText) {
-            config_block.handleEnterWithoutText(_assertThisInitialized(_assertThisInitialized(_this)), currentBlock);
+            config_block.handleEnterWithoutText(_assertThisInitialized(_this), currentBlock);
 
             _this.closePopOvers();
 
@@ -1038,7 +1108,7 @@ function (_React$Component) {
 
         if (currentBlock.getText().length > 0) {
           if (config_block && config_block.handleEnterWithText) {
-            config_block.handleEnterWithText(_assertThisInitialized(_assertThisInitialized(_this)), currentBlock);
+            config_block.handleEnterWithText(_assertThisInitialized(_this), currentBlock);
 
             _this.closePopOvers();
 
@@ -1073,7 +1143,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleBeforeInput", function (chars) {
+    _defineProperty(_assertThisInitialized(_this), "handleBeforeInput", function (chars) {
       var currentBlock = getCurrentBlock(_this.state.editorState);
       if (!currentBlock) return;
       var blockType = currentBlock.getType();
@@ -1127,7 +1197,7 @@ function (_React$Component) {
       return true;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyCommand", function (command) {
+    _defineProperty(_assertThisInitialized(_this), "handleKeyCommand", function (command) {
       var editorState = _this.state.editorState;
       var newBlockType;
 
@@ -1178,14 +1248,14 @@ function (_React$Component) {
       return false;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "findCommandKey", function (opt, command) {
+    _defineProperty(_assertThisInitialized(_this), "findCommandKey", function (opt, command) {
       // console.log "COMMAND find: #{opt} #{command}"
       return _this.props.key_commands[opt].find(function (o) {
         return o.key === command;
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "KeyBindingFn", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "KeyBindingFn", function (e) {
       //⌘ + B / Ctrl + B   Bold
       //⌘ + I / Ctrl + I   Italic
       //⌘ + K / Ctrl + K   Turn into link
@@ -1231,7 +1301,7 @@ function (_React$Component) {
       return getDefaultKeyBinding(e);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateBlockData", function (block, options) {
+    _defineProperty(_assertThisInitialized(_this), "updateBlockData", function (block, options) {
       var data = block.getData();
       var newData = data.merge(options);
       var newState = updateDataOfBlock(_this.state.editorState, block, newData); // this fixes enter from image caption
@@ -1239,7 +1309,7 @@ function (_React$Component) {
       return _this.forceRender(newState);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setDirection", function (direction_type) {
+    _defineProperty(_assertThisInitialized(_this), "setDirection", function (direction_type) {
       var contentState = _this.state.editorState.getCurrentContent();
 
       var selectionState = _this.state.editorState.getSelection();
@@ -1250,7 +1320,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleEditable", function () {
+    _defineProperty(_assertThisInitialized(_this), "toggleEditable", function () {
       _this.closePopOvers();
 
       return _this.props.toggleEditable(function () {
@@ -1258,7 +1328,7 @@ function (_React$Component) {
       }); //setState({ read_only: !this.props.read_only }, this.testEmitAndDecode)
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "disableEditable", function () {
+    _defineProperty(_assertThisInitialized(_this), "disableEditable", function () {
       console.log("in !!");
 
       _this.closePopOvers();
@@ -1268,7 +1338,7 @@ function (_React$Component) {
       }, _this.testEmitAndDecode);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "enableEditable", function () {
+    _defineProperty(_assertThisInitialized(_this), "enableEditable", function () {
       _this.closePopOvers();
 
       console.log("out !!");
@@ -1277,13 +1347,13 @@ function (_React$Component) {
       }, _this.testEmitAndDecode);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closePopOvers", function () {
+    _defineProperty(_assertThisInitialized(_this), "closePopOvers", function () {
       return _this.props.tooltips.map(function (o) {
         return _this.refs[o.ref].hide();
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "relocateTooltips", function () {
+    _defineProperty(_assertThisInitialized(_this), "relocateTooltips", function () {
       if (_this.props.read_only) return;
       if (isEmpty(_this.refs)) return;
       if (!getCurrentBlock(_this.state.editorState)) return;
@@ -1292,25 +1362,25 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "tooltipsWithProp", function (prop) {
+    _defineProperty(_assertThisInitialized(_this), "tooltipsWithProp", function (prop) {
       return _this.props.tooltips.filter(function (o) {
         return o[prop];
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "tooltipHasSelectionElement", function (tooltip, element) {
+    _defineProperty(_assertThisInitialized(_this), "tooltipHasSelectionElement", function (tooltip, element) {
       return tooltip.selectionElements.includes(element);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleShowPopLinkOver", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleShowPopLinkOver", function (e) {
       return _this.showPopLinkOver();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleHidePopLinkOver", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleHidePopLinkOver", function (e) {
       return _this.hidePopLinkOver();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "showPopLinkOver", function (el) {
+    _defineProperty(_assertThisInitialized(_this), "showPopLinkOver", function (el) {
       // handles popover display
       // using anchor or from popover
       if (!_this.refs.anchor_popover) return; // set url first in order to calculate popover width
@@ -1337,21 +1407,21 @@ function (_React$Component) {
       return _this.cancelHide();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hidePopLinkOver", function () {
+    _defineProperty(_assertThisInitialized(_this), "hidePopLinkOver", function () {
       if (!_this.refs.anchor_popover) return;
       return _this.hideTimeout = setTimeout(function () {
         return _this.refs.anchor_popover.hide();
       }, 300);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "cancelHide", function () {
+    _defineProperty(_assertThisInitialized(_this), "cancelHide", function () {
       // console.log "Cancel Hide"
       return clearTimeout(_this.hideTimeout);
     });
 
-    _this.render = _this.render.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.decorator = _this.props.decorators(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.blockRenderMap = Map({
+    _this.render = _this.render.bind(_assertThisInitialized(_this));
+    _this.decorator = _this.props.decorators(_assertThisInitialized(_this));
+    _this.blockRenderMap = Map$1({
       "image": {
         element: 'figure'
       },
@@ -1403,7 +1473,7 @@ function (_React$Component) {
         xhr: _this.props.xhr,
         data_storage: _this.props.data_storage
       },
-      editor: _assertThisInitialized(_assertThisInitialized(_this)),
+      editor: _assertThisInitialized(_this),
       editorState: _this.getEditorState,
       editorContent: _this.emitSerializedOutput()
     });
@@ -1934,9 +2004,9 @@ function (_React$Component) {
 
     _classCallCheck(this, DanteImagePopover);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DanteImagePopover).call(this, props));
+    _this = _possibleConstructorReturn(this, (DanteImagePopover.__proto__ || Object.getPrototypeOf(DanteImagePopover)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", function (b) {
+    _defineProperty(_assertThisInitialized(_this), "display", function (b) {
       if (b) {
         return _this.show();
       } else {
@@ -1944,25 +2014,25 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "show", function () {
+    _defineProperty(_assertThisInitialized(_this), "show", function () {
       return _this.setState({
         show: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hide", function () {
+    _defineProperty(_assertThisInitialized(_this), "hide", function () {
       return _this.setState({
         show: false
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPosition", function (coords) {
+    _defineProperty(_assertThisInitialized(_this), "setPosition", function (coords) {
       return _this.setState({
         position: coords
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_toggleScaled", function (ev) {
+    _defineProperty(_assertThisInitialized(_this), "_toggleScaled", function (ev) {
       if (_this.state.scaled) {
         return _this.collapse();
       } else {
@@ -1970,19 +2040,19 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scale", function () {
+    _defineProperty(_assertThisInitialized(_this), "scale", function () {
       return _this.setState({
         scaled: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "collapse", function () {
+    _defineProperty(_assertThisInitialized(_this), "collapse", function () {
       return _this.setState({
         scaled: false
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "relocate", function () {
+    _defineProperty(_assertThisInitialized(_this), "relocate", function () {
       var editorState = _this.props.editorState;
 
       if (editorState.getSelection().isCollapsed()) {
@@ -2018,17 +2088,17 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getStyle", function () {
+    _defineProperty(_assertThisInitialized(_this), "getStyle", function () {
       if (!_this.state.position) {
         return {};
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function (item) {
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function (item) {
       return _this.props.editor.setDirection(item.type);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this), "render", function () {
       return React.createElement("div", {
         ref: "image_popover",
         className: "dante-popover popover--Aligntooltip popover--top popover--animated ".concat(_this.state.show ? 'is-active' : undefined),
@@ -2087,7 +2157,7 @@ function (_React$Component2) {
   _inherits(DanteImagePopoverItem, _React$Component2);
 
   function DanteImagePopoverItem() {
-    var _getPrototypeOf2;
+    var _ref;
 
     var _this2;
 
@@ -2097,14 +2167,14 @@ function (_React$Component2) {
       args[_key] = arguments[_key];
     }
 
-    _this2 = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DanteImagePopoverItem)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this2 = _possibleConstructorReturn(this, (_ref = DanteImagePopoverItem.__proto__ || Object.getPrototypeOf(DanteImagePopoverItem)).call.apply(_ref, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "handleClick", function (e) {
+    _defineProperty(_assertThisInitialized(_this2), "handleClick", function (e) {
       e.preventDefault();
       return _this2.props.handleClick(_this2.props.item);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this2), "render", function () {
       return React.createElement("li", {
         className: "dante-menu-button align-".concat(_this2.props.item.type),
         onMouseDown: _this2.handleClick
@@ -2113,8 +2183,8 @@ function (_React$Component2) {
       }, Icons["image".concat(capitalize(_this2.props.item.type))]()));
     });
 
-    _this2.handleClick = _this2.handleClick.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-    _this2.render = _this2.render.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+    _this2.handleClick = _this2.handleClick.bind(_assertThisInitialized(_this2));
+    _this2.render = _this2.render.bind(_assertThisInitialized(_this2));
     return _this2;
   }
 
@@ -2139,9 +2209,9 @@ function (_React$Component) {
 
     _classCallCheck(this, DanteAnchorPopover);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DanteAnchorPopover).call(this, props));
+    _this = _possibleConstructorReturn(this, (DanteAnchorPopover.__proto__ || Object.getPrototypeOf(DanteAnchorPopover)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", function (b) {
+    _defineProperty(_assertThisInitialized(_this), "display", function (b) {
       if (b) {
         return _this.show();
       } else {
@@ -2149,19 +2219,19 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "show", function () {
+    _defineProperty(_assertThisInitialized(_this), "show", function () {
       return _this.setState({
         show: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hide", function () {
+    _defineProperty(_assertThisInitialized(_this), "hide", function () {
       return _this.setState({
         show: false
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "relocate", function (node) {
+    _defineProperty(_assertThisInitialized(_this), "relocate", function (node) {
       if (!node) {
         return;
       }
@@ -2252,9 +2322,9 @@ function (_React$Component) {
 
     _classCallCheck(this, DanteInlineTooltip);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DanteInlineTooltip).call(this, props));
+    _this = _possibleConstructorReturn(this, (DanteInlineTooltip.__proto__ || Object.getPrototypeOf(DanteInlineTooltip)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", function (b) {
+    _defineProperty(_assertThisInitialized(_this), "display", function (b) {
       if (b) {
         return _this.show();
       } else {
@@ -2262,25 +2332,25 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "show", function () {
+    _defineProperty(_assertThisInitialized(_this), "show", function () {
       return _this.setState({
         show: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hide", function () {
+    _defineProperty(_assertThisInitialized(_this), "hide", function () {
       return _this.setState({
         show: false
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPosition", function (coords) {
+    _defineProperty(_assertThisInitialized(_this), "setPosition", function (coords) {
       return _this.setState({
         position: coords
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_toggleScaled", function (ev) {
+    _defineProperty(_assertThisInitialized(_this), "_toggleScaled", function (ev) {
       ev.preventDefault();
 
       if (_this.state.scaled) {
@@ -2290,7 +2360,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scale", function () {
+    _defineProperty(_assertThisInitialized(_this), "scale", function () {
       if (_this.state.scaled) {
         return;
       }
@@ -2304,7 +2374,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "collapse", function () {
+    _defineProperty(_assertThisInitialized(_this), "collapse", function () {
       if (!_this.state.scaled) {
         return;
       }
@@ -2320,7 +2390,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "activeClass", function () {
+    _defineProperty(_assertThisInitialized(_this), "activeClass", function () {
       //if @props.show then "is-active" else ""
       if (_this.isActive()) {
         return "is-active";
@@ -2329,11 +2399,11 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isActive", function () {
+    _defineProperty(_assertThisInitialized(_this), "isActive", function () {
       return _this.state.show;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaledClass", function () {
+    _defineProperty(_assertThisInitialized(_this), "scaledClass", function () {
       if (_this.state.scaled) {
         return "is-scaled";
       } else {
@@ -2341,7 +2411,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clickOnFileUpload", function () {
+    _defineProperty(_assertThisInitialized(_this), "clickOnFileUpload", function () {
       _this.refs.fileInput.click();
 
       _this.collapse();
@@ -2349,7 +2419,7 @@ function (_React$Component) {
       return _this.hide();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handlePlaceholder", function (input) {
+    _defineProperty(_assertThisInitialized(_this), "handlePlaceholder", function (input) {
       var opts = {
         type: input.widget_options.insert_block,
         placeholder: input.options.placeholder,
@@ -2358,7 +2428,7 @@ function (_React$Component) {
       return _this.props.onChange(resetBlockWithType(_this.props.editorState, 'placeholder', opts));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "insertImage", function (file) {
+    _defineProperty(_assertThisInitialized(_this), "insertImage", function (file) {
       var opts = {
         url: URL.createObjectURL(file),
         file: file
@@ -2366,7 +2436,7 @@ function (_React$Component) {
       return _this.props.onChange(addNewBlock(_this.props.editorState, 'image', opts));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleFileInput", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleFileInput", function (e) {
       var fileList = e.target.files; // TODO: support multiple file uploads
 
       /*
@@ -2377,17 +2447,17 @@ function (_React$Component) {
       return _this.insertImage(fileList[0]);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleInsertion", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleInsertion", function (e) {
       _this.hide();
 
       return _this.props.onChange(addNewBlock(_this.props.editorState, e.type, {}));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "widgets", function () {
+    _defineProperty(_assertThisInitialized(_this), "widgets", function () {
       return _this.props.editor.props.widgets;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clickHandler", function (e, type) {
+    _defineProperty(_assertThisInitialized(_this), "clickHandler", function (e, type) {
       var request_block = _this.widgets().find(function (o) {
         return o.type === type;
       });
@@ -2407,13 +2477,13 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getItems", function () {
+    _defineProperty(_assertThisInitialized(_this), "getItems", function () {
       return _this.widgets().filter(function (o) {
         return o.widget_options ? o.widget_options.displayOnInlineTooltip : null;
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isDescendant", function (parent, child) {
+    _defineProperty(_assertThisInitialized(_this), "isDescendant", function (parent, child) {
       var node = child.parentNode;
 
       while (node !== null) {
@@ -2427,7 +2497,7 @@ function (_React$Component) {
       return false;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "relocate", function () {
+    _defineProperty(_assertThisInitialized(_this), "relocate", function () {
       var editorState = _this.props.editorState;
       var currentBlock = getCurrentBlock(_this.props.editorState);
       var blockType = currentBlock.getType();
@@ -2543,7 +2613,7 @@ function (_React$Component2) {
   _inherits(InlineTooltipItem, _React$Component2);
 
   function InlineTooltipItem() {
-    var _getPrototypeOf2;
+    var _ref;
 
     var _this3;
 
@@ -2553,9 +2623,9 @@ function (_React$Component2) {
       args[_key] = arguments[_key];
     }
 
-    _this3 = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(InlineTooltipItem)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this3 = _possibleConstructorReturn(this, (_ref = InlineTooltipItem.__proto__ || Object.getPrototypeOf(InlineTooltipItem)).call.apply(_ref, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "clickHandler", function (e) {
+    _defineProperty(_assertThisInitialized(_this3), "clickHandler", function (e) {
       e.preventDefault();
       return _this3.props.clickHandler(e, _this3.props.item.type);
     });
@@ -2597,7 +2667,7 @@ function (_React$Component) {
   _inherits(DanteTooltipColor, _React$Component);
 
   function DanteTooltipColor() {
-    var _getPrototypeOf2;
+    var _ref;
 
     var _this;
 
@@ -2607,9 +2677,9 @@ function (_React$Component) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DanteTooltipColor)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _possibleConstructorReturn(this, (_ref = DanteTooltipColor.__proto__ || Object.getPrototypeOf(DanteTooltipColor)).call.apply(_ref, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function (ev) {
+    _defineProperty(_assertThisInitialized(_this), "toggle", function (ev) {
       // let selection = this.props.editorState.getSelection()
       // prevent unselection of selection
       ev.preventDefault();
@@ -2620,7 +2690,7 @@ function (_React$Component) {
 
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function (e, item) {
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function (e, item) {
       e.preventDefault();
 
       _this.setState({
@@ -2632,7 +2702,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "currentValue", function () {
+    _defineProperty(_assertThisInitialized(_this), "currentValue", function () {
       var selection = _this.props.editorState.getSelection();
 
       if (!selection.isCollapsed()) {
@@ -2642,7 +2712,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderColor", function () {
+    _defineProperty(_assertThisInitialized(_this), "renderColor", function () {
       //console.log(`${this.currentValue()} vs ${this.props.value}`)
       var v = _this.currentValue() || _this.props.value; //console.log(`this should be ${v}`)
 
@@ -2703,9 +2773,9 @@ function (_React$Component) {
 
     _classCallCheck(this, DanteTooltip);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DanteTooltip).call(this, props));
+    _this = _possibleConstructorReturn(this, (DanteTooltip.__proto__ || Object.getPrototypeOf(DanteTooltip)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_clickInlineHandler", function (ev, style) {
+    _defineProperty(_assertThisInitialized(_this), "_clickInlineHandler", function (ev, style) {
       ev.preventDefault();
 
       _this.props.onChange(RichUtils.toggleInlineStyle(_this.props.editorState, style));
@@ -2713,7 +2783,7 @@ function (_React$Component) {
       _this.callRelocate();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", function (b) {
+    _defineProperty(_assertThisInitialized(_this), "display", function (b) {
       if (b) {
         return _this.show();
       } else {
@@ -2721,13 +2791,13 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "show", function () {
+    _defineProperty(_assertThisInitialized(_this), "show", function () {
       return _this.setState({
         show: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hide", function () {
+    _defineProperty(_assertThisInitialized(_this), "hide", function () {
       return _this.setState({
         link_mode: false,
         show: false,
@@ -2735,13 +2805,13 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPosition", function (coords) {
+    _defineProperty(_assertThisInitialized(_this), "setPosition", function (coords) {
       return _this.setState({
         position: coords
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isDescendant", function (parent, child) {
+    _defineProperty(_assertThisInitialized(_this), "isDescendant", function (parent, child) {
       var node = child.parentNode;
 
       while (node !== null) {
@@ -2755,7 +2825,7 @@ function (_React$Component) {
       return false;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "relocate", function () {
+    _defineProperty(_assertThisInitialized(_this), "relocate", function () {
       var currentBlock = getCurrentBlock(_this.props.editorState);
       var blockType = currentBlock.getType(); // display tooltip only for unstyled
 
@@ -2815,7 +2885,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_clickBlockHandler", function (ev, style) {
+    _defineProperty(_assertThisInitialized(_this), "_clickBlockHandler", function (ev, style) {
       ev.preventDefault();
 
       _this.props.onChange(RichUtils.toggleBlockType(_this.props.editorState, style));
@@ -2825,7 +2895,7 @@ function (_React$Component) {
       }, 0);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_clickBlockInlineStyle", function (ev, style) {
+    _defineProperty(_assertThisInitialized(_this), "_clickBlockInlineStyle", function (ev, style) {
       var k = Object.keys(style)[0];
 
       _this.props.onChange(_this.props.styles[k].toggle(_this.props.editorState, style[k])); //this.props.onChange(RichUtils.toggleInlineStyle(this.props.editorState, style))
@@ -2836,7 +2906,7 @@ function (_React$Component) {
       }, 0);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "displayLinkMode", function () {
+    _defineProperty(_assertThisInitialized(_this), "displayLinkMode", function () {
       if (_this.state.link_mode) {
         return "dante-menu--linkmode";
       } else {
@@ -2844,7 +2914,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "displayActiveMenu", function () {
+    _defineProperty(_assertThisInitialized(_this), "displayActiveMenu", function () {
       if (_this.state.show) {
         return "dante-menu--active";
       } else {
@@ -2852,7 +2922,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_enableLinkMode", function (ev) {
+    _defineProperty(_assertThisInitialized(_this), "_enableLinkMode", function (ev) {
       ev.preventDefault();
       return _this.setState({
         link_mode: true,
@@ -2862,7 +2932,7 @@ function (_React$Component) {
       }, _this.callRelocate);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_disableLinkMode", function (ev) {
+    _defineProperty(_assertThisInitialized(_this), "_disableLinkMode", function (ev) {
       ev.preventDefault();
       return _this.setState({
         link_mode: false,
@@ -2871,23 +2941,23 @@ function (_React$Component) {
       }, _this.callRelocate);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "callRelocate", function () {
+    _defineProperty(_assertThisInitialized(_this), "callRelocate", function () {
       setTimeout(function () {
         return _this.relocate();
       }, 0);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideMenu", function () {
+    _defineProperty(_assertThisInitialized(_this), "hideMenu", function () {
       return _this.hide();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleInputEnter", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleInputEnter", function (e) {
       if (e.which === 13) {
         return _this.confirmLink(e);
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "confirmLink", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "confirmLink", function (e) {
       e.preventDefault();
       var editorState = _this.props.editorState;
       var urlValue = e.currentTarget.value;
@@ -2909,24 +2979,24 @@ function (_React$Component) {
       return _this._disableLinkMode(e);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getPosition", function () {
+    _defineProperty(_assertThisInitialized(_this), "getPosition", function () {
       var pos = _this.state.position;
       return pos;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inlineItems", function () {
+    _defineProperty(_assertThisInitialized(_this), "inlineItems", function () {
       return _this.props.widget_options.block_types.filter(function (o) {
         return o.type === "inline";
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "blockItems", function () {
+    _defineProperty(_assertThisInitialized(_this), "blockItems", function () {
       return _this.props.widget_options.block_types.filter(function (o) {
         return o.type === "block";
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getDefaultValue", function () {
+    _defineProperty(_assertThisInitialized(_this), "getDefaultValue", function () {
       if (_this.refs.dante_menu_input) {
         _this.refs.dante_menu_input.value = "";
       }
@@ -2959,13 +3029,13 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "linkBlock", function () {
+    _defineProperty(_assertThisInitialized(_this), "linkBlock", function () {
       return _this.props.widget_options.block_types.find(function (o) {
         return o.type === "link";
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this), "render", function () {
       return React.createElement("div", {
         id: "dante-menu",
         ref: "dante_menu",
@@ -3068,7 +3138,7 @@ function (_React$Component2) {
   _inherits(DanteTooltipItem, _React$Component2);
 
   function DanteTooltipItem() {
-    var _getPrototypeOf2;
+    var _ref;
 
     var _this2;
 
@@ -3078,13 +3148,13 @@ function (_React$Component2) {
       args[_key] = arguments[_key];
     }
 
-    _this2 = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DanteTooltipItem)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this2 = _possibleConstructorReturn(this, (_ref = DanteTooltipItem.__proto__ || Object.getPrototypeOf(DanteTooltipItem)).call.apply(_ref, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "handleClick", function (ev) {
+    _defineProperty(_assertThisInitialized(_this2), "handleClick", function (ev) {
       return _this2.props.handleClick(ev, _this2.props.item.style);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "activeClass", function () {
+    _defineProperty(_assertThisInitialized(_this2), "activeClass", function () {
       if (_this2.isActive()) {
         return "active";
       } else {
@@ -3092,7 +3162,7 @@ function (_React$Component2) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "isActive", function () {
+    _defineProperty(_assertThisInitialized(_this2), "isActive", function () {
       if (_this2.props.type === "block") {
         return _this2.activeClassBlock();
       } else {
@@ -3100,7 +3170,7 @@ function (_React$Component2) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "activeClassInline", function () {
+    _defineProperty(_assertThisInitialized(_this2), "activeClassInline", function () {
       if (!_this2.props.editorState || !_this2.props.editorState.getCurrentContent().hasText()) {
         return;
       }
@@ -3108,7 +3178,7 @@ function (_React$Component2) {
       return _this2.props.editorState.getCurrentInlineStyle().has(_this2.props.item.style);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "activeClassBlock", function () {
+    _defineProperty(_assertThisInitialized(_this2), "activeClassBlock", function () {
       if (!_this2.props.editorState || !_this2.props.editorState.getCurrentContent().hasText()) {
         return;
       }
@@ -3146,7 +3216,7 @@ function (_React$Component3) {
   _inherits(DanteTooltipLink, _React$Component3);
 
   function DanteTooltipLink() {
-    var _getPrototypeOf3;
+    var _ref2;
 
     var _this3;
 
@@ -3156,9 +3226,9 @@ function (_React$Component3) {
       args[_key2] = arguments[_key2];
     }
 
-    _this3 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(DanteTooltipLink)).call.apply(_getPrototypeOf3, [this].concat(args)));
+    _this3 = _possibleConstructorReturn(this, (_ref2 = DanteTooltipLink.__proto__ || Object.getPrototypeOf(DanteTooltipLink)).call.apply(_ref2, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "promptForLink", function (ev) {
+    _defineProperty(_assertThisInitialized(_this3), "promptForLink", function (ev) {
       var selection = _this3.props.editorState.getSelection();
 
       if (!selection.isCollapsed()) {
@@ -3166,7 +3236,7 @@ function (_React$Component3) {
       }
     });
 
-    _this3.promptForLink = _this3.promptForLink.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.promptForLink = _this3.promptForLink.bind(_assertThisInitialized(_this3));
     return _this3;
   }
 
@@ -3269,13 +3339,13 @@ function (_React$Component) {
 
     _classCallCheck(this, ImageBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ImageBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (ImageBlock.__proto__ || Object.getPrototypeOf(ImageBlock)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "blockPropsSrc", function () {
+    _defineProperty(_assertThisInitialized(_this), "blockPropsSrc", function () {
       return _this.props.blockProps.data.src;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultUrl", function (data) {
+    _defineProperty(_assertThisInitialized(_this), "defaultUrl", function (data) {
       if (data.url) {
         return data.url;
       }
@@ -3291,11 +3361,11 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultPlaceholder", function () {
+    _defineProperty(_assertThisInitialized(_this), "defaultPlaceholder", function () {
       return _this.props.blockProps.config.image_caption_placeholder;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultAspectRatio", function (data) {
+    _defineProperty(_assertThisInitialized(_this), "defaultAspectRatio", function (data) {
       if (data.aspect_ratio) {
         return {
           width: data.aspect_ratio['width'],
@@ -3311,7 +3381,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getAspectRatio", function (w, h) {
+    _defineProperty(_assertThisInitialized(_this), "getAspectRatio", function (w, h) {
       var maxWidth = 1000;
       var maxHeight = 1000;
       var ratio = 0;
@@ -3345,7 +3415,7 @@ function (_React$Component) {
       return result;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateData", function () {
+    _defineProperty(_assertThisInitialized(_this), "updateData", function () {
       var _this$props = _this.props,
           blockProps = _this$props.blockProps,
           block = _this$props.block;
@@ -3358,7 +3428,7 @@ function (_React$Component) {
       return setEditorState(updateDataOfBlock(getEditorState(), block, newData));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "replaceImg", function () {
+    _defineProperty(_assertThisInitialized(_this), "replaceImg", function () {
       _this.img = new Image();
       _this.img.src = _this.refs.image_tag.src;
 
@@ -3366,7 +3436,7 @@ function (_React$Component) {
         url: _this.img.src
       });
 
-      var self = _assertThisInitialized(_assertThisInitialized(_this)); // exit only when not blob and not forceUload
+      var self = _assertThisInitialized(_this); // exit only when not blob and not forceUload
 
 
       if (!_this.img.src.includes("blob:") && !_this.props.block.data.get("forceUpload")) {
@@ -3384,19 +3454,19 @@ function (_React$Component) {
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "startLoader", function () {
+    _defineProperty(_assertThisInitialized(_this), "startLoader", function () {
       return _this.setState({
         loading: true
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "stopLoader", function () {
+    _defineProperty(_assertThisInitialized(_this), "stopLoader", function () {
       return _this.setState({
         loading: false
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleUpload", function () {
+    _defineProperty(_assertThisInitialized(_this), "handleUpload", function () {
       _this.startLoader();
 
       _this.props.blockProps.addLock();
@@ -3406,7 +3476,7 @@ function (_React$Component) {
       return _this.uploadFile();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "aspectRatio", function () {
+    _defineProperty(_assertThisInitialized(_this), "aspectRatio", function () {
       return {
         maxWidth: "".concat(_this.state.aspect_ratio.width),
         maxHeight: "".concat(_this.state.aspect_ratio.height),
@@ -3414,7 +3484,7 @@ function (_React$Component) {
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateDataSelection", function () {
+    _defineProperty(_assertThisInitialized(_this), "updateDataSelection", function () {
       var _this$props$blockProp = _this.props.blockProps,
           getEditorState = _this$props$blockProp.getEditorState,
           setEditorState = _this$props$blockProp.setEditorState;
@@ -3425,21 +3495,21 @@ function (_React$Component) {
       return setEditorState(EditorState.forceSelection(getEditorState(), newselection));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleGrafFigureSelectImg", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "handleGrafFigureSelectImg", function (e) {
       e.preventDefault();
       return _this.setState({
         selected: true
       }, _this.updateDataSelection);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "coords", function () {
+    _defineProperty(_assertThisInitialized(_this), "coords", function () {
       return {
         maxWidth: "".concat(_this.state.aspect_ratio.width, "px"),
         maxHeight: "".concat(_this.state.aspect_ratio.height, "px")
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getBase64Image", function (img) {
+    _defineProperty(_assertThisInitialized(_this), "getBase64Image", function (img) {
       var canvas = document.createElement("canvas");
       canvas.width = img.width;
       canvas.height = img.height;
@@ -3449,7 +3519,7 @@ function (_React$Component) {
       return dataURL;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "formatData", function () {
+    _defineProperty(_assertThisInitialized(_this), "formatData", function () {
       var formData = new FormData();
 
       if (_this.file) {
@@ -3462,7 +3532,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getUploadUrl", function () {
+    _defineProperty(_assertThisInitialized(_this), "getUploadUrl", function () {
       var url = _this.config.upload_url;
 
       if (typeof url === "function") {
@@ -3472,10 +3542,10 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "uploadFile", function () {
+    _defineProperty(_assertThisInitialized(_this), "uploadFile", function () {
       // custom upload handler
       if (_this.config.upload_handler) {
-        return _this.config.upload_handler(_this.formatData().get('file'), _assertThisInitialized(_assertThisInitialized(_this)));
+        return _this.config.upload_handler(_this.formatData().get('file'), _assertThisInitialized(_this));
       }
 
       if (!_this.config.upload_url) {
@@ -3496,7 +3566,7 @@ function (_React$Component) {
         _this.uploadCompleted(result.data.url);
 
         if (_this.config.upload_callback) {
-          return _this.config.upload_callback(result, _assertThisInitialized(_assertThisInitialized(_this)));
+          return _this.config.upload_callback(result, _assertThisInitialized(_this));
         }
       }).catch(function (error) {
         _this.uploadFailed();
@@ -3504,7 +3574,7 @@ function (_React$Component) {
         console.log("ERROR: got error uploading file ".concat(error));
 
         if (_this.config.upload_error_callback) {
-          return _this.config.upload_error_callback(error, _assertThisInitialized(_assertThisInitialized(_this)));
+          return _this.config.upload_error_callback(error, _assertThisInitialized(_this));
         }
       });
       return function (json_response) {
@@ -3512,21 +3582,21 @@ function (_React$Component) {
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "uploadFailed", function () {
+    _defineProperty(_assertThisInitialized(_this), "uploadFailed", function () {
       _this.props.blockProps.removeLock();
 
       _this.stopLoader();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "placeHolderEnabled", function () {
+    _defineProperty(_assertThisInitialized(_this), "placeHolderEnabled", function () {
       return _this.state.enabled || _this.props.block.getText();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "placeholderText", function () {
+    _defineProperty(_assertThisInitialized(_this), "placeholderText", function () {
       return _this.config.image_caption_placeholder || 'caption here (optional)';
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this), "render", function () {
       return React.createElement("div", {
         ref: "image_tag2",
         suppressContentEditableWarning: true
@@ -3634,7 +3704,7 @@ function (_React$Component2) {
   _inherits(Loader, _React$Component2);
 
   function Loader() {
-    var _getPrototypeOf2;
+    var _ref;
 
     var _this2;
 
@@ -3644,9 +3714,9 @@ function (_React$Component2) {
       args[_key] = arguments[_key];
     }
 
-    _this2 = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Loader)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this2 = _possibleConstructorReturn(this, (_ref = Loader.__proto__ || Object.getPrototypeOf(Loader)).call.apply(_ref, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this2), "render", function () {
       return React.createElement("div", null, _this2.props.toggle ? React.createElement("div", {
         className: "image-upoader-loader"
       }, React.createElement("p", null, _this2.props.progress === 100 ? "processing image..." : React.createElement("span", null, React.createElement("span", null, "loading"), " ", Math.round(_this2.props.progress)))) : undefined);
@@ -3727,15 +3797,15 @@ function (_React$Component) {
 
     _classCallCheck(this, EmbedBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EmbedBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (EmbedBlock.__proto__ || Object.getPrototypeOf(EmbedBlock)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultData", function () {
+    _defineProperty(_assertThisInitialized(_this), "defaultData", function () {
       var existing_data = _this.props.block.getData().toJS();
 
       return existing_data.embed_data || {};
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateData", function () {
+    _defineProperty(_assertThisInitialized(_this), "updateData", function () {
       var _this$props = _this.props,
           block = _this$props.block,
           blockProps = _this$props.blockProps;
@@ -3746,11 +3816,11 @@ function (_React$Component) {
       return setEditorState(updateDataOfBlock(getEditorState(), block, newData));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dataForUpdate", function () {
+    _defineProperty(_assertThisInitialized(_this), "dataForUpdate", function () {
       return _this.props.blockProps.data.toJS();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "classForImage", function () {
+    _defineProperty(_assertThisInitialized(_this), "classForImage", function () {
       if (_this.picture()) {
         return "";
       } else {
@@ -3758,7 +3828,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "picture", function () {
+    _defineProperty(_assertThisInitialized(_this), "picture", function () {
       if (_this.state.embed_data.images && _this.state.embed_data.images.length > 0) {
         return _this.state.embed_data.images[0].url;
       } else {
@@ -3876,15 +3946,15 @@ function (_React$Component) {
 
     _classCallCheck(this, VideoBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (VideoBlock.__proto__ || Object.getPrototypeOf(VideoBlock)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultData", function () {
+    _defineProperty(_assertThisInitialized(_this), "defaultData", function () {
       var existing_data = _this.props.block.getData().toJS();
 
       return existing_data.embed_data || {};
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateData", function () {
+    _defineProperty(_assertThisInitialized(_this), "updateData", function () {
       var _this$props = _this.props,
           block = _this$props.block,
           blockProps = _this$props.blockProps;
@@ -3895,11 +3965,11 @@ function (_React$Component) {
       return setEditorState(updateDataOfBlock(getEditorState(), block, newData));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dataForUpdate", function () {
+    _defineProperty(_assertThisInitialized(_this), "dataForUpdate", function () {
       return _this.props.blockProps.data.toJS();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "classForImage", function () {
+    _defineProperty(_assertThisInitialized(_this), "classForImage", function () {
       if (_this.state.embed_data.thumbnail_url) {
         return "";
       } else {
@@ -3907,7 +3977,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderEmbedHtml", function () {
+    _defineProperty(_assertThisInitialized(_this), "renderEmbedHtml", function () {
       if (_this.dataForUpdate().mediaRenderHandler) {
         return _this.dataForUpdate().mediaRenderHandler();
       } else {
@@ -4012,24 +4082,24 @@ function (_React$Component) {
 
     _classCallCheck(this, PlaceholderBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(PlaceholderBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (PlaceholderBlock.__proto__ || Object.getPrototypeOf(PlaceholderBlock)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "placeholderText", function () {
+    _defineProperty(_assertThisInitialized(_this), "placeholderText", function () {
       //if (this.state.enabled) {
       //  return ""
       //}
       return _this.props.blockProps.data.toJS().placeholder || _this.placeholderFromProps() || _this.defaultText();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "placeholderFromProps", function () {
+    _defineProperty(_assertThisInitialized(_this), "placeholderFromProps", function () {
       return _this.props.block.toJS().placeholder;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defaultText", function () {
+    _defineProperty(_assertThisInitialized(_this), "defaultText", function () {
       return "write something ";
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "placeholderRender", function () {
+    _defineProperty(_assertThisInitialized(_this), "placeholderRender", function () {
       if (_this.props.block.text.length === 0) {
         return React.createElement("div", {
           className: "public-DraftEditorPlaceholder-root"
@@ -4100,9 +4170,9 @@ function (_React$Component) {
 
     _classCallCheck(this, CodeBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(CodeBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (CodeBlock.__proto__ || Object.getPrototypeOf(CodeBlock)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateData", function (options) {
+    _defineProperty(_assertThisInitialized(_this), "updateData", function (options) {
       var _this$props = _this.props,
           blockProps = _this$props.blockProps,
           block = _this$props.block;
@@ -4113,11 +4183,11 @@ function (_React$Component) {
       return setEditorState(updateDataOfBlock(getEditorState(), block, newData));
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderSelect", function () {
+    _defineProperty(_assertThisInitialized(_this), "renderSelect", function () {
       return _this.props.blockProps.config.displaySelect && !_this.props.blockProps.getEditor().props.read_only;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", function () {
+    _defineProperty(_assertThisInitialized(_this), "render", function () {
       return React.createElement("div", null, React.createElement("span", {
         className: "dante-code-syntax"
       }, _this.renderSelect() ? React.createElement(Select, {
@@ -4161,9 +4231,9 @@ function (_React$Component) {
 
     _classCallCheck(this, Link);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Link).call(this, props));
+    _this = _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_validateLink", function () {
+    _defineProperty(_assertThisInitialized(_this), "_validateLink", function () {
       var str = "demo";
       /*eslint-disable */
 
@@ -4184,11 +4254,11 @@ function (_React$Component) {
 
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_checkProtocol", function () {
+    _defineProperty(_assertThisInitialized(_this), "_checkProtocol", function () {
       return console.log("xcvd");
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_showPopLinkOver", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "_showPopLinkOver", function (e) {
       if (!_this.data.showPopLinkOver) {
         return;
       }
@@ -4196,7 +4266,7 @@ function (_React$Component) {
       return _this.data.showPopLinkOver(_this.refs.link);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_hidePopLinkOver", function (e) {
+    _defineProperty(_assertThisInitialized(_this), "_hidePopLinkOver", function (e) {
       if (!_this.data.hidePopLinkOver) {
         return;
       }
@@ -4289,7 +4359,7 @@ function (_React$Component) {
 
     _classCallCheck(this, DividerBlock);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DividerBlock).call(this, props));
+    _this = _possibleConstructorReturn(this, (DividerBlock.__proto__ || Object.getPrototypeOf(DividerBlock)).call(this, props));
     _this.state = {
       enabled: false,
       data: _this.props.blockProps.data.toJS()
@@ -4321,9 +4391,9 @@ function (_React$Component) {
 
     _classCallCheck(this, Dante);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Dante).call(this, props));
+    _this = _possibleConstructorReturn(this, (Dante.__proto__ || Object.getPrototypeOf(Dante)).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleEditable", function () {
+    _defineProperty(_assertThisInitialized(_this), "toggleEditable", function () {
       _this.setState({
         read_only: !_this.state.read_only
       });
