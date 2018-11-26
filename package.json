@@ -17,10 +17,7 @@
   "module": "package/Dante.es.js",
   "browser": "package/umd/Dante.js",
   "files": [
-    "package/umd",
-    "package/lib",
-    "package/dist",
-    "package/es"
+    "package/*"
   ],
   "keywords": [
     "dante",
