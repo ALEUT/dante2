@@ -551,6 +551,12 @@ export default class DanteEditor extends React.Component {
           return true
         }
 
+        if (this.props.continuousBlocks.indexOf(blockType) < 0) {
+          this.onChange(addNewBlockAt(editorState, currentBlock.getKey()))
+
+          return true
+        }
+
         //TODO turn this in configurable
         switch (blockType) {
           case "header-one":
