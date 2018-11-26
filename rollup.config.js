@@ -5,7 +5,7 @@ import pkg from './package.json';
 import postcss from 'rollup-plugin-postcss'
 
 const pluginsConfig = [
-      postcss({}),
+      postcss({extract: true}),
       babel({
         exclude: 'node_modules/**',
         runtimeHelpers: true ,
