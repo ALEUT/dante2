@@ -2577,6 +2577,7 @@ function (_React$Component) {
         className: "inlineTooltip ".concat(this.activeClass(), " ").concat(this.scaledClass()),
         style: this.state.position
       }, React.createElement("button", {
+        type: "button",
         className: "inlineTooltip-button control",
         title: "Close Menu",
         "data-action": "inline-menu",
@@ -2637,6 +2638,7 @@ function (_React$Component2) {
     key: "render",
     value: function render() {
       return React.createElement("button", {
+        type: "button",
         className: "inlineTooltip-button scale",
         title: this.props.title,
         onMouseDown: this.clickHandler,
