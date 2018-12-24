@@ -23,7 +23,7 @@ export default class CodeBlock extends React.Component {
   }
 
   componentDidMount() {
-    this.updateData({syntax: "javascript"})
+    //this.updateData({syntax: "javascript"})
 
   }
 
@@ -52,6 +52,7 @@ export default class CodeBlock extends React.Component {
               this.renderSelect() ?
               <Select options={this.languages} 
                 isSearchable={true}
+                defaultValue={this.state.syntax}
                 onChange={(o)=>{
                 this.updateData({syntax: o.value})
               }} /> : null
@@ -74,7 +75,7 @@ export const CodeBlockConfig = (options={})=>{
     block: CodeBlock,
     editable: true,
     renderable: true,
-    breakOnContinuous: false,
+    //breakOnContinuous: true,
     wrapper_class: "graf graf--code",
     selected_class: "is-selected",
     selectedFn: block => {},
@@ -84,8 +85,15 @@ export const CodeBlockConfig = (options={})=>{
     },
     handleEnterWithText(ctx, block) {
       const { editorState } = ctx.state
+      const selection = editorState.getSelection()
+      // check if we are in the last line and got 2 previous breaklines
+      if(block.getLength() === selection.getEndOffset()){
+        if(block.getText().slice(-2) === "\n\n"){
+          return ctx.onChange(addNewBlockAt(editorState, block.getKey()))          
+        }
+      }
       return ctx.onChange(RichUtils.insertSoftNewline(editorState))
-      //return ctx.onChange(addNewBlockAt(editorState, block.getKey()))
+      
     },
     widget_options: {
       
@@ -93,7 +101,7 @@ export const CodeBlockConfig = (options={})=>{
     options: {
       displaySelect: true,
       languages: [
-                  { value: 'javascript', label: 'js' },
+                  { value: 'javascript', label: 'javascript' },
                   { value: 'html', label: 'html' },
                   { value: 'css', label: 'css' },
                   { value: null, label: 'none'}
