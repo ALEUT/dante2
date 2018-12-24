@@ -370,7 +370,7 @@
       value: function store(content) {
         var _this = this;
 
-        if (!this.config.data_storage.url) {
+        if (!this.config.data_storage.url && !this.config.data_storage.save_handler) {
           return;
         }
 
@@ -969,7 +969,8 @@
       });
 
       _defineProperty(_assertThisInitialized(_this), "handleHTMLPaste", function (text, html) {
-        var currentBlock = getCurrentBlock(_this.state.editorState); // TODO: make this configurable
+        var currentBlock = getCurrentBlock(_this.state.editorState);
+        var editorState = _this.state.editorState; // TODO: make this configurable
 
         switch (currentBlock.getType()) {
           case "image":
@@ -979,33 +980,9 @@
         }
 
         var newContentState = customHTML2Content(html, _this.extendedBlockRenderMap);
-
-        var selection = _this.state.editorState.getSelection();
-
-        var endKey = selection.getEndKey();
-
-        var content = _this.state.editorState.getCurrentContent();
-
-        var blocksBefore = content.blockMap.toSeq().takeUntil(function (v) {
-          return v.key === endKey;
-        });
-        var blocksAfter = content.blockMap.toSeq().skipUntil(function (v) {
-          return v.key === endKey;
-        }).rest();
-        var newBlockKey = newContentState.blockMap.first().getKey();
-        var newBlockMap = blocksBefore.concat(newContentState.blockMap, blocksAfter).toOrderedMap();
-        var newContent = content.merge({
-          blockMap: newBlockMap,
-          selectionBefore: selection,
-          selectionAfter: selection.merge({
-            anchorKey: newBlockKey,
-            anchorOffset: 0,
-            focusKey: newBlockKey,
-            focusOffset: 0,
-            isBackward: false
-          })
-        });
-        var pushedContentState = draftJs.EditorState.push(_this.state.editorState, newContent, 'insert-fragment');
+        var pastedBlocks = newContentState.getBlockMap();
+        var newState = draftJs.Modifier.replaceWithFragment(editorState.getCurrentContent(), editorState.getSelection(), pastedBlocks);
+        var pushedContentState = draftJs.EditorState.push(editorState, newState, 'insert-fragment');
 
         _this.onChange(pushedContentState);
 
@@ -2644,6 +2621,9 @@
           className: "inlineTooltip-button scale",
           title: this.props.title,
           onMouseDown: this.clickHandler,
+          onClick: function onClick(e) {
+            return e.preventDefault();
+          },
           style: {
             fontSize: '21px'
           }
@@ -3914,7 +3894,7 @@
       type: 'embed',
       block: EmbedBlock,
       icon: embed,
-      editable: true,
+      editable: false,
       renderable: true,
       breakOnContinuous: true,
       wrapper_class: "graf graf--mixtapeEmbed",
@@ -4197,6 +4177,7 @@
         }, _this.renderSelect() ? React.createElement(Select, {
           options: _this.languages,
           isSearchable: true,
+          defaultValue: _this.state.syntax,
           onChange: function onChange(o) {
             _this.updateData({
               syntax: o.value
@@ -4214,11 +4195,8 @@
 
     _createClass(CodeBlock, [{
       key: "componentDidMount",
-      value: function componentDidMount() {
-        this.updateData({
-          syntax: "javascript"
-        });
-      } // will update block state
+      value: function componentDidMount() {} //this.updateData({syntax: "javascript"})
+      // will update block state
 
     }]);
 
@@ -4333,7 +4311,8 @@
     prism: Prism
   };
   var PrismDraftDecorator = function PrismDraftDecorator() {
-    return new PrismDecorator(PrismOptions);
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return new PrismDecorator(Object.assign(options, PrismOptions));
   };
 
   var _this = undefined;
