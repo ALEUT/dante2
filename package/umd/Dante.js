@@ -3765,7 +3765,7 @@
         upload_callback: null,
         upload_error_callback: null,
         delete_block_callback: null,
-        image_caption_placeholder: "type a caption (optional)"
+        image_caption_placeholder: "заголовок (опционально)"
       }
     };
     return Object.assign(config, options);
@@ -4404,8 +4404,8 @@
     content: null,
     read_only: false,
     spellcheck: false,
-    title_placeholder: "Title",
-    body_placeholder: "Write your story",
+    title_placeholder: "",
+    body_placeholder: "",
     decorators: function decorators(context) {
       return new MultiDecorator([PrismDraftDecorator(), new draftJs.CompositeDecorator([{
         strategy: findEntities.bind(null, 'LINK', context),
