@@ -104,8 +104,8 @@ Dante.defaultProps = {
   content: null,
   read_only: false,
   spellcheck: false,
-  title_placeholder: "Title",
-  body_placeholder: "Write your story",
+  title_placeholder: "",
+  body_placeholder: "",
 
   decorators: (context)=>{
     return new MultiDecorator([

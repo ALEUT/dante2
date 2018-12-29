@@ -397,7 +397,7 @@ export const ImageBlockConfig = (options={})=>{
       upload_callback: null,
       upload_error_callback: null,
       delete_block_callback: null,
-      image_caption_placeholder: "type a caption (optional)"
+      image_caption_placeholder: "заголовок (опционально)"
     }
   
   }
