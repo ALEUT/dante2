@@ -710,7 +710,11 @@ function (_React$Component) {
         setTimeout(function () {
           return _this.relocateTooltips();
         });
-        return _this.dispatchChangesToSave();
+
+        _this.dispatchChangesToSave();
+
+        _this.props.onChange ? _this.props.onChange(_assertThisInitialized(_this)) : null;
+        return;
       });
     });
 
@@ -2577,6 +2581,7 @@ function (_React$Component) {
         });
       }), React.createElement("input", {
         type: "file",
+        accept: "image/*",
         style: {
           display: 'none'
         },
