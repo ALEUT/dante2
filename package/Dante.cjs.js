@@ -373,7 +373,7 @@ function () {
     value: function store(content) {
       var _this = this;
 
-      if (!this.config.data_storage.url && !this.config.data_storage.save_handler) {
+      if (!(this.config.data_storage.url || this.config.data_storage.save_handler)) {
         return;
       }
 
@@ -719,7 +719,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleUndeletables", function (editorState) {
-      // undeletable behavior, will keep previous blockMap 
+      // undeletable behavior, will keep previous blockMap
       // if undeletables are deleted
       var undeletable_types = _this.props.widgets.filter(function (o) {
         return o.undeletable;
@@ -907,7 +907,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleTooltipDisplayOn", function (prop, display) {
-      // for button click on after inline style set, 
+      // for button click on after inline style set,
       // avoids inline popver to reappear on previous selection
       if (_this.props.read_only) {
         return;
@@ -3461,8 +3461,6 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "handleUpload", function () {
       _this.startLoader();
 
-      _this.props.blockProps.addLock();
-
       _this.updateData();
 
       return _this.uploadFile();
@@ -3545,6 +3543,8 @@ function (_React$Component) {
 
         return;
       }
+
+      _this.props.blockProps.addLock();
 
       axios({
         method: 'post',
@@ -4152,6 +4152,27 @@ var PlaceholderBlockConfig = function PlaceholderBlockConfig() {
   return Object.assign(config, options);
 };
 
+var DividerBlock =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(DividerBlock, _React$Component);
+
+  function DividerBlock() {
+    _classCallCheck(this, DividerBlock);
+
+    return _possibleConstructorReturn(this, (DividerBlock.__proto__ || Object.getPrototypeOf(DividerBlock)).apply(this, arguments));
+  }
+
+  _createClass(DividerBlock, [{
+    key: "render",
+    value: function render() {
+      return React.createElement("div", null, React.createElement("hr", null));
+    }
+  }]);
+
+  return DividerBlock;
+}(React.Component);
+
 var CodeBlock =
 /*#__PURE__*/
 function (_React$Component) {
@@ -4340,37 +4361,6 @@ var findEntities = function findEntities(entityType, instance, contentBlock, cal
   }(_this), callback);
 };
 
-var DividerBlock =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(DividerBlock, _React$Component);
-
-  function DividerBlock(props) {
-    var _this;
-
-    _classCallCheck(this, DividerBlock);
-
-    _this = _possibleConstructorReturn(this, (DividerBlock.__proto__ || Object.getPrototypeOf(DividerBlock)).call(this, props));
-    _this.state = {
-      enabled: false,
-      data: _this.props.blockProps.data.toJS()
-    };
-    return _this;
-  }
-
-  _createClass(DividerBlock, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {}
-  }, {
-    key: "render",
-    value: function render() {
-      return React.createElement("hr", null);
-    }
-  }]);
-
-  return DividerBlock;
-}(React.Component);
-
 // component implementation
 var Dante =
 /*#__PURE__*/
@@ -4409,7 +4399,7 @@ function (_React$Component) {
 }(React.Component);
 
 Dante.defaultProps = {
-  content: null,
+  content: {},
   read_only: false,
   spellcheck: false,
   title_placeholder: "",
