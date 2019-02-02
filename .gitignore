@@ -9,6 +9,7 @@
 # production
 /build
 /docs
+.idea
 
 *.tgz
 # misc
