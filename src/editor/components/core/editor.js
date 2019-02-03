@@ -111,7 +111,7 @@ export default class DanteEditor extends React.Component {
     })
 
     if (this.props.onEditorChange) {
-      this.props.onEditorChange(this.editor);
+      this.props.onEditorChange(this);
     }
   }
 

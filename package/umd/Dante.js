@@ -1478,7 +1478,7 @@
         });
 
         if (this.props.onEditorChange) {
-          this.props.onEditorChange(this.editor);
+          this.props.onEditorChange(this);
         }
       }
     }, {
