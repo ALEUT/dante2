@@ -1474,6 +1474,10 @@ function (_React$Component) {
           return _this2.relocateTooltips();
         });
       });
+
+      if (this.config.data_storage.onEditorChange) {
+        this.config.data_storage.onEditorChange(this.editor);
+      }
     }
   }, {
     key: "render",

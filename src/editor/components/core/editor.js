@@ -109,6 +109,10 @@ export default class DanteEditor extends React.Component {
           return this.relocateTooltips()
         })
     })
+
+    if (this.config.data_storage.onEditorChange) {
+      this.config.data_storage.onEditorChange(this.editor);
+    }
   }
 
   initializeState = ()=> {
