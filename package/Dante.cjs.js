@@ -1279,8 +1279,10 @@ function (_React$Component) {
 
         return draftJs.getDefaultKeyBinding(e);
       }
-      /*else if (e.keyCode == 8 || e.keyCode == 46) {
-      return "delete"
+      /*else if (e.keyCode === 8) {
+          // TODO: handle backspace/delete if previous block not editable (like divider for example)
+            return 'not-handled'
+      }
       }*/
 
 
@@ -3913,7 +3915,7 @@ var EmbedBlockConfig = function EmbedBlockConfig() {
       insert_block: "embed"
     },
     options: {
-      endpoint: '//open.iframe.ly/api/oembed?origin=https://github.com&url=',
+      endpoint: '//noembed.com/embed?url=',
       placeholder: 'Paste a link to embed content from another site (e.g. Twitter) and press Enter'
     },
     handleEnterWithoutText: function handleEnterWithoutText(ctx, block) {
@@ -4048,7 +4050,7 @@ var VideoBlockConfig = function VideoBlockConfig() {
       insert_block: "video"
     },
     options: {
-      endpoint: '//open.iframe.ly/api/oembed?origin=https://github.com&url=',
+      endpoint: '//noembed.com/embed?url=',
       placeholder: 'Paste a YouTube, Vine, Vimeo, or other video link, and press Enter',
       caption: 'Type caption for embed (optional)'
     },
@@ -4151,27 +4153,6 @@ var PlaceholderBlockConfig = function PlaceholderBlockConfig() {
   };
   return Object.assign(config, options);
 };
-
-var DividerBlock =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(DividerBlock, _React$Component);
-
-  function DividerBlock() {
-    _classCallCheck(this, DividerBlock);
-
-    return _possibleConstructorReturn(this, (DividerBlock.__proto__ || Object.getPrototypeOf(DividerBlock)).apply(this, arguments));
-  }
-
-  _createClass(DividerBlock, [{
-    key: "render",
-    value: function render() {
-      return React.createElement("div", null, React.createElement("hr", null));
-    }
-  }]);
-
-  return DividerBlock;
-}(React.Component);
 
 var CodeBlock =
 /*#__PURE__*/
@@ -4399,7 +4380,7 @@ function (_React$Component) {
 }(React.Component);
 
 Dante.defaultProps = {
-  content: {},
+  content: null,
   read_only: false,
   spellcheck: false,
   title_placeholder: "",
@@ -4452,6 +4433,9 @@ Dante.defaultProps = {
   }, {
     className: 'graf--italic',
     block: 'ITALIC'
+  }, {
+    className: 'graf--divider',
+    block: 'divider'
   }],
   continuousBlocks: ["unstyled", "blockquote", "ordered-list", "unordered-list", "unordered-list-item", "ordered-list-item", "code-block"],
   key_commands: {
@@ -4478,6 +4462,9 @@ Dante.defaultProps = {
     }, {
       key: 75,
       cmd: 'insert:link'
+    }, {
+      key: 13,
+      cmd: 'toggle_block:divider'
     }]
   },
   character_convert_mapping: {

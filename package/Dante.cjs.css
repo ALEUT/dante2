@@ -927,6 +927,24 @@ p[data-align="center"],
   .graf--h4 {
     font-size: 1.4em; } }
 
+.graf--divider span {
+  text-align: center;
+  width: 100%;
+  display: block; }
+
+.graf--divider span:before {
+  line-height: 1;
+  user-select: none;
+  font-weight: 400;
+  font-size: 25px;
+  letter-spacing: 18px;
+  content: "...";
+  display: inline-block;
+  margin-left: .6em;
+  position: relative;
+  color: #757575;
+  top: -3px; }
+
 .aspectRatioPlaceholder {
   margin: 0 auto;
   position: relative;
@@ -1318,6 +1336,7 @@ a[rel=token], .markup--query {
 .DraftEditor-root {
   position: relative; }
 
+/*HACK FOR ISSUE  https://github.com/facebook/draft-js/issues/304 , proposal from @bradbumbalough*/
 /**
  * Zero-opacity background used to allow focus in IE. Otherwise, clicks
  * fall through to the placeholder.
