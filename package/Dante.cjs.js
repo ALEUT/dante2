@@ -1480,8 +1480,8 @@ function (_React$Component) {
         });
       });
 
-      if (this.config.data_storage.onEditorChange) {
-        this.config.data_storage.onEditorChange(this.editor);
+      if (this.props.onEditorChange) {
+        this.props.onEditorChange(this.editor);
       }
     }
   }, {
