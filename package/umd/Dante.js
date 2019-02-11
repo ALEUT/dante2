@@ -3917,7 +3917,7 @@
       },
       options: {
         endpoint: '//noembed.com/embed?url=',
-        placeholder: 'Paste a link to embed content from another site (e.g. Twitter) and press Enter'
+        placeholder: 'Чтобы встроить контент с другого сайта, вставьте ссылку и нажмите Enter'
       },
       handleEnterWithoutText: function handleEnterWithoutText(ctx, block) {
         var editorState = ctx.state.editorState;
@@ -4052,8 +4052,8 @@
       },
       options: {
         endpoint: '//noembed.com/embed?url=',
-        placeholder: 'Paste a YouTube, Vine, Vimeo, or other video link, and press Enter',
-        caption: 'Type caption for embed (optional)'
+        placeholder: 'Вставьте ссылку на YouTube, Vine, Vimeo или другой видео-сервис и нажмите Enter',
+        caption: 'Введите заголовок (опционально)'
       },
       handleEnterWithoutText: function handleEnterWithoutText(ctx, block) {
         var editorState = ctx.state.editorState;
