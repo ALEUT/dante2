@@ -133,7 +133,7 @@ export const EmbedBlockConfig = (options={})=>{
       },
       options: {
         endpoint: '//noembed.com/embed?url=',
-        placeholder: 'Paste a link to embed content from another site (e.g. Twitter) and press Enter'
+        placeholder: 'Чтобы встроить контент с другого сайта, вставьте ссылку и нажмите Enter'
       },
       handleEnterWithoutText(ctx, block) {
         const { editorState } = ctx.state
