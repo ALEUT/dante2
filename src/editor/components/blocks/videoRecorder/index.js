@@ -15,7 +15,7 @@ const VideoContainer = styled('div')`
   border: 1px solid rgba(0,0,0,0.09);
   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
   border-radius: 3px;
-  position:relative
+  position:relative;
 `
 
 const VideoBody = styled('div')`
@@ -31,7 +31,7 @@ const RecordActivity = styled('div')`
   background: ${props =>
     props.active ? red : green
   };
-
+  position: absolute;
   height: 13px;
   width: 13px;
   border-radius: 50%;
@@ -44,22 +44,39 @@ const RecordActivity = styled('div')`
 `
 
 const EditorControls = styled('div')`
-  height: 25px;
-  width: 100%;
-  display: inline-block;
-  padding-left: 11px;
+    position: absolute;
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    margin-top: 25px;
+    margin-left: 17px;
+    height: 50px;
+    z-index: 100;
 `
 
 const StatusBar = styled('div')`
+  z-index: 10;
+  position:absolute;
+  height: 100%;
   width: 100%;
-  padding-top: 4px;
-  color: #bbb7b7;
-  background: #ffffff;
-  padding-bottom: 4px;
-  line-height: 2px;
-  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.07);
-  font-size: 0.8em;
-  border-bottom: 1px solid #e0e0e0;
+  background: ${props =>
+    props.loading ? "white" : "transparent"
+  };
+  display: ${props =>
+    props.loading ? "flex" : "none"
+  };
+  align-items:center;
+
+  opacity: ${props =>
+    props.loading ? "0.9" : "1"
+  };
 `
 
 const VideoPlayer = styled('video')`
@@ -67,22 +84,107 @@ const VideoPlayer = styled('video')`
   background: black;
 `
 
-const Button = styled('button')`
-  outline:none;
-  height: 24px;
-  //min-width: 70px;
-  margin-right: 10px;
-  text-align: center;
-  border-radius:40px;
-  background: #fff;
-  border: 2px solid ${green};
-  color:${green};
-  letter-spacing:1px;
-  text-shadow:0;
-  font:{
-    size:12px;
-    weight:bold;
+const SecondsLeft = styled('div')`
+    //position: absolute;
+    font-size: 1rem;
+    right: 39px;
+    top: 19px;
+    font-size: 2em;
+    color: white;
+
+`
+
+const RecButton = styled('div')`
+
+  display: inline-block;
+  cursor: pointer;
+  -webkit-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+  margin: 1px 7px;
+  text-indent: 36px;
+
+  text-indent: 36px;
+  color: #d9ece5;
+  text-shadow: 0px 1px 0px #101010;
+
+  &:hover{
+    //color: ${green}
+    color: #d9ece5;
   }
+
+
+  &:before{
+    position: absolute;
+    width: 31px;
+    height: 30px;
+    top: 2px;
+    content: '';
+    border-radius: 50px;
+    background: #e80415;
+    cursor: pointer;
+    left: 2px;
+  }
+
+  &.recording{
+    &:before{
+
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 6px;
+    content: '';
+    border-radius: 2px;
+    background: #e80415;
+    cursor: pointer;
+    left: 7px;
+    }
+  }
+
+
+  &:after{
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    top: 4px;
+    content: '';
+    -webkit-transform: translate(-6px,-6px);
+    -ms-transform: translate(-6px,-6px);
+    -webkit-transform: translate(-6px,-6px);
+    -ms-transform: translate(-6px,-6px);
+    -webkit-transform: translate(-6px,-6px);
+    -ms-transform: translate(-6px,-6px);
+    transform: translate(-6px,-6px);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    cursor: pointer;
+    left: 4px;
+  }
+
+`
+
+const Button = styled('button')`
+
+    outline: none;
+    height: 37px;
+    /* margin-right: 10px; */
+    /* text-align: center; */
+    border-radius: 40px;
+    background: ${green};
+    border: 2px solid ${green};
+    color: #ffffff;
+    -webkit-letter-spacing: 1px;
+    -moz-letter-spacing: 1px;
+    -ms-letter-spacing: 1px;
+    letter-spacing: 1px;
+    text-shadow: 0;
+    cursor: pointer;
+    -webkit-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+
+
+    font-size:12px;
+    font-weight:bold;
+ 
   cursor: pointer;
   transition: all 0.25s ease;
   &:hover {
@@ -148,12 +250,17 @@ class VideoRecorderBlock extends React.Component {
       recording: false,
       paused: false,
       fileReady: false,
+      secondsLeft: 0,
+      loading: false,
       url: this.props.block.data.get('url')
     };
 
     this.video = null
 
     this.stopTimeout = null
+    this.secondInterval = null
+
+
 
     this.handleGranted = this.handleGranted.bind(this);
     this.handleDenied = this.handleDenied.bind(this);
@@ -174,6 +281,8 @@ class VideoRecorderBlock extends React.Component {
       this.playMode()
     }
   }
+
+
 
   // will update block state
   updateData = (options)=> {
@@ -207,14 +316,28 @@ class VideoRecorderBlock extends React.Component {
 
     // max seconds to record video 
     if(!context.config.seconds_to_record) return
+    let count = context.config.seconds_to_record / 1000
+
+    this.setState({secondsLeft: count})
+    
+    if(this.secondInterval) 
+      clearTimeout(this.secondInterval)
+
+    this.secondInterval = setInterval(()=> {
+       this.setState({secondsLeft: this.state.secondsLeft - 1})
+    }, 1000);
+
     this.stopTimeout = setTimeout(()=>{
       context.refs.mediaRecorder.stop()
+
     }, context.config.seconds_to_record )
   }
 
   handleStop(blob) {
 
     if(this.stopTimeout){
+      clearTimeout(this.secondInterval)
+      this.setState({secondsLeft: 0})
       clearTimeout(this.stopTimeout)
     }
 
@@ -330,7 +453,8 @@ class VideoRecorderBlock extends React.Component {
 
   stopLoader = ()=> {
     return this.setState({
-      loading: false 
+      loading: false,
+      fileReady: false
     })
   }
 
@@ -347,6 +471,11 @@ class VideoRecorderBlock extends React.Component {
       this.stopLoader()
       return
     }
+
+    this.setState({
+      loading: true,
+    })
+
     
     axios({
       method: 'post',
@@ -425,9 +554,7 @@ class VideoRecorderBlock extends React.Component {
     return (
 
       <div ref="app">
-        <Loader toggle={this.state.loading} 
-          progress={this.state.loading_progress} 
-        />
+
         <VideoContainer>
       
           <ReactMediaRecorder ref="mediaRecorder"
@@ -456,7 +583,18 @@ class VideoRecorderBlock extends React.Component {
               {
                 !this.isReadOnly() ?
 
-                  <StatusBar>
+                  <StatusBar 
+                    contentEditable={false} 
+                    loading={this.state.loading}>
+
+
+                    {
+                      this.state.loading ?
+                      <Loader toggle={this.state.loading} 
+                        progress={this.state.loading_progress} 
+                      /> : null
+                    }
+
                     {
                       /*
 
@@ -476,70 +614,67 @@ class VideoRecorderBlock extends React.Component {
 
                       */
                     }
-
-                    <EditorControls>
-
-                        <Button 
-                          onClick={(e)=>{
-                              e.preventDefault()
-                              start()
-                            }
-                          }
-                          disabled={this.state.recording}
-                          className={this.state.recording ? 'onclic' : ''}
-                          >
-                          REC
-                        </Button>   
-
-
-                        {
-                          this.state.recording ? 
-
-                          <Button onClick={(e)=>{
-                              e.preventDefault()
-                              stop()
-                            }
-                          }
-                          ref="stopBtn" className="right">
-                            STOP REC
-                          </Button>  : null
-                        } 
-                   
-
-                      {
-                        /*
-                        <button onClick={pause}>Pause</button>
-                        <button onClick={resume}>Resume</button>
-                        */
-                      }
-
-                      {
-                        this.state.fileReady ?
-                          <Button className="right"
-                            onClick={(e)=>{
-                              e.preventDefault()
-                              this.confirm()
-                            }}>
-                            Save
-                          </Button> : null
-                      }
-                      
-
-                      {
-                        this.state.recording ? 
-
-                          <RecordActivity 
-                            granted={granted} 
-                            active={recording} 
-                          /> : null 
-                      }
-
-                    </EditorControls>
                   
                   </StatusBar> : null
               }
 
               <VideoBody>
+
+
+                {
+                  !this.isReadOnly() ?
+                
+                    <EditorControls contentEditable={false}>
+
+                      <div style={{position:'relative', display: 'flex'}}>
+                        {
+                          !this.state.loading ?
+                          <React.Fragment>
+                            <RecButton 
+                              onClick={(e)=>{
+                                  e.preventDefault()
+                                  this.state.recording ? stop() : start()
+                                }
+                              }
+                              disabled={this.state.recording}
+                              className={this.state.recording ? 'recording' : ''}
+                              >
+                              {this.state.recording ? `recording. (${this.state.secondsLeft} seconds left)` : `press button to start recording`}
+                            </RecButton>  
+
+                            <SecondsLeft>
+                              
+                            </SecondsLeft>
+                          </React.Fragment> : null
+                        }
+                      </div>  
+
+                      {
+                        this.state.fileReady && !this.state.loading ?
+                          <Button
+                            onClick={(e)=>{
+                              e.preventDefault()
+                              this.confirm()
+                            }}>
+                            confirm recording upload ?
+                          </Button> : null
+                      }
+
+
+                      {
+                        /*
+                        this.state.recording ? 
+
+                          <RecordActivity 
+                            granted={granted} 
+                            active={recording} 
+                          /> : null  
+                        */
+                      }
+
+                    </EditorControls> : null
+
+                }
 
                 <VideoPlayer autoPlay muted/>
 
@@ -569,24 +704,25 @@ class Loader extends React.Component {
 
   render = ()=> {
     return (
-      <div>
+      <React.Fragment>
         { this.props.toggle
-          ? <div className="image-upoader-loader">
+          ? <div className="image-upoader-loader" style={{width: '100%', textAlign: 'center'}}>
               <p>
                 { this.props.progress === 100
-                  ? "processing image..."
+                  ? "processing video..."
                   : <span>
-                      <span>loading</span> 
+                      <span>uploading video {" "}</span> 
                       { 
                         Math.round( this.props.progress ) 
                       }
+                      %
                     </span>
                 }
               </p>
             </div>
-          : undefined
+          : null
         }
-      </div>
+      </React.Fragment>
     )
   }
 }
