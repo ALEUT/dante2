@@ -865,6 +865,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "blockStyleFn", function (block) {
+      //console.log("blockStyle!")
       var currentBlock = getCurrentBlock(_this.state.editorState);
       if (!currentBlock) return;
       var is_selected = currentBlock.getKey() === block.getKey() ? "is-selected" : "";
@@ -1489,14 +1490,29 @@ function (_React$Component) {
         suppressContentEditableWarning: true
       }, React.createElement("div", {
         className: "postContent"
-      }, React.createElement("div", {
+      }, this.props.tooltips.map(function (o, i) {
+        return React.createElement(o.component, {
+          ref: o.ref,
+          key: i,
+          editor: _this3,
+          editorState: _this3.state.editorState,
+          onChange: _this3.onChange,
+          styles: _this3.styles,
+          configTooltip: o,
+          widget_options: o.widget_options,
+          showPopLinkOver: _this3.showPopLinkOver,
+          hidePopLinkOver: _this3.hidePopLinkOver,
+          handleOnMouseOver: _this3.handleShowPopLinkOver,
+          handleOnMouseOut: _this3.handleHidePopLinkOver
+        });
+      }), React.createElement("div", {
         className: "section-inner layoutSingleColumn",
         onClick: this.focus
       }, React.createElement(Editor, {
         blockRendererFn: this.blockRenderer,
         editorState: this.state.editorState,
-        onChange: this.onChange,
-        handleDrop: this.handleDrop,
+        onChange: this.onChange //handleDrop={this.handleDrop}
+        ,
         onUpArrow: this.handleUpArrow,
         onDownArrow: this.handleDownArrow,
         handleReturn: this.handleReturn,
@@ -1512,22 +1528,7 @@ function (_React$Component) {
         readOnly: this.props.read_only,
         placeholder: this.props.body_placeholder,
         ref: "editor"
-      }))), this.props.tooltips.map(function (o, i) {
-        return React.createElement(o.component, {
-          ref: o.ref,
-          key: i,
-          editor: _this3,
-          editorState: _this3.state.editorState,
-          onChange: _this3.onChange,
-          styles: _this3.styles,
-          configTooltip: o,
-          widget_options: o.widget_options,
-          showPopLinkOver: _this3.showPopLinkOver,
-          hidePopLinkOver: _this3.hidePopLinkOver,
-          handleOnMouseOver: _this3.handleShowPopLinkOver,
-          handleOnMouseOut: _this3.handleHidePopLinkOver
-        });
-      }), this.props.debug ? React.createElement(Debug, {
+      }))), this.props.debug ? React.createElement(Debug, {
         locks: this.state.locks,
         editor: this
       }) : undefined);
@@ -2818,7 +2819,14 @@ function (_React$Component) {
       return false;
     });
 
+    _defineProperty(_assertThisInitialized(_this), "handleWindowWidth", function () {});
+
     _defineProperty(_assertThisInitialized(_this), "relocate", function () {
+      // no position needs to be set
+      if (_this.state.sticky) {
+        return _this.handleWindowWidth();
+      }
+
       var currentBlock = getCurrentBlock(_this.props.editorState);
       var blockType = currentBlock.getType(); // display tooltip only for unstyled
 
@@ -2869,6 +2877,7 @@ function (_React$Component) {
       } // console.log "SET SHOW FOR TOOLTIP INSERT MENU"
 
 
+      console.log(left, top);
       return _this.setState({
         show: true,
         position: {
@@ -2973,6 +2982,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "getPosition", function () {
+      if (_this.isSticky()) return _this.stickyStyle();
       var pos = _this.state.position;
       return pos;
     });
@@ -3028,11 +3038,25 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "stickyStyle", function () {
+      return {
+        position: "fixed",
+        top: "0px",
+        left: "0px"
+      };
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "isSticky", function () {
+      if (_this.state.sticky) return true;
+      var x = window.matchMedia("(max-width: 700px)");
+      if (x.matches) return true;
+    });
+
     _defineProperty(_assertThisInitialized(_this), "render", function () {
       return React.createElement("div", {
         id: "dante-menu",
         ref: "dante_menu",
-        className: "dante-menu ".concat(_this.displayActiveMenu(), " ").concat(_this.displayLinkMode()),
+        className: "dante-menu ".concat(_this.displayActiveMenu(), " ").concat(_this.displayLinkMode(), " ").concat(_this.isSticky() ? 'dante-sticky-menu' : ''),
         style: _this.getPosition()
       }, _this.linkBlock() ? React.createElement("div", {
         className: "dante-menu-linkinput"
@@ -3110,6 +3134,7 @@ function (_React$Component) {
     _this.state = {
       link_mode: false,
       show: false,
+      sticky: props.configTooltip.sticky,
       position: {},
       menu_style: {}
     };
@@ -3253,6 +3278,7 @@ var DanteTooltipConfig = function DanteTooltipConfig() {
     ref: 'insert_tooltip',
     component: DanteTooltip,
     displayOnSelection: true,
+    sticky: false,
     selectionElements: ["unstyled", "blockquote", "ordered-list", "unordered-list", "unordered-list-item", "ordered-list-item", "code-block", 'header-one', 'header-two', 'header-three', 'header-four', 'footer', 'column', 'jumbo'],
     widget_options: {
       placeholder: "type a url",
@@ -3809,6 +3835,18 @@ function (_React$Component) {
       return setEditorState(updateDataOfBlock(getEditorState(), block, newData));
     });
 
+    _defineProperty(_assertThisInitialized(_this), "deleteSelf", function (e) {
+      e.preventDefault();
+      var _this$props2 = _this.props,
+          block = _this$props2.block,
+          blockProps = _this$props2.blockProps;
+      var getEditorState = blockProps.getEditorState,
+          setEditorState = blockProps.setEditorState;
+      var data = block.getData();
+      var newData = data.merge(_this.state);
+      return setEditorState(resetBlockWithType(getEditorState(), 'unstyled', {}));
+    });
+
     _defineProperty(_assertThisInitialized(_this), "dataForUpdate", function () {
       return _this.props.blockProps.data.toJS();
     });
@@ -3824,12 +3862,18 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "picture", function () {
       if (_this.state.embed_data.images && _this.state.embed_data.images.length > 0) {
         return _this.state.embed_data.images[0].url;
+      } else if (_this.state.embed_data.thumbnail_url) {
+        return _this.state.embed_data.thumbnail_url;
+      } else if (_this.state.embed_data.image) {
+        return _this.state.embed_data.image;
       } else {
-        if (_this.state.embed_data.thumbnail_url) {
-          return _this.state.embed_data.thumbnail_url;
-        } else {
-          return null;
-        }
+        return null;
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function (e) {
+      if (!_this.props.blockProps.getEditor().props.read_only) {
+        e.preventDefault();
       }
     });
 
@@ -3882,15 +3926,23 @@ function (_React$Component) {
         style: {
           backgroundImage: "url('".concat(this.picture(), "')")
         }
-      }) : undefined, this.state.error ? React.createElement("h2", null, this.state.error) : undefined, React.createElement("a", {
+      }) : undefined, this.state.error ? React.createElement("h2", null, this.state.error) : undefined, !this.props.blockProps.getEditor().props.read_only ? React.createElement("a", {
+        href: "#",
+        className: "graf--media-embed-close",
+        onClick: this.deleteSelf
+      }, "x") : null, React.createElement("a", {
         className: "markup--anchor markup--mixtapeEmbed-anchor",
         target: "_blank",
-        href: this.state.embed_data.url
+        href: this.state.embed_data.url,
+        onClick: this.handleClick,
+        contentEditable: false
       }, React.createElement("strong", {
         className: "markup--strong markup--mixtapeEmbed-strong"
       }, this.state.embed_data.title), React.createElement("em", {
         className: "markup--em markup--mixtapeEmbed-em"
-      }, this.state.embed_data.description)), this.state.embed_data.provider_url);
+      }, this.state.embed_data.description)), React.createElement("span", {
+        contentEditable: false
+      }, this.state.embed_data.provider_url || this.state.embed_data.url));
     }
   }]);
 
@@ -3903,7 +3955,7 @@ var EmbedBlockConfig = function EmbedBlockConfig() {
     type: 'embed',
     block: EmbedBlock,
     icon: embed,
-    editable: false,
+    editable: true,
     renderable: true,
     breakOnContinuous: true,
     wrapper_class: "graf graf--mixtapeEmbed",
