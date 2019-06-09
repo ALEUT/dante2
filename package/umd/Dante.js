@@ -642,9 +642,29 @@
 
       _defineProperty(_assertThisInitialized(_this), "initializeState", function () {
         var newEditorState = draftJs.EditorState.createEmpty(_this.decorator);
+        var content = _this.props.content;
 
-        if (_this.props.content) {
-          newEditorState = draftJs.EditorState.set(_this.decodeEditorContent(_this.props.content), {
+        if (content) {
+          if (_this.props.read_only) {
+            if (_this.props.preview) {
+              var dividerIndex = content.blocks.findIndex(function (block) {
+                return block.type === 'divider';
+              });
+
+              if (dividerIndex > -1) {
+                content = Object.assign({}, content);
+                content.blocks = content.blocks.slice();
+                content.blocks.length = dividerIndex;
+              }
+            } else {
+              content = Object.assign({}, content);
+              content.blocks = content.blocks.filter(function (block) {
+                return block.type !== 'divider';
+              });
+            }
+          }
+
+          newEditorState = draftJs.EditorState.set(_this.decodeEditorContent(content), {
             decorator: _this.decorator
           });
         }
