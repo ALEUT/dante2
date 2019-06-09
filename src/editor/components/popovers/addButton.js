@@ -256,7 +256,7 @@ export default class DanteInlineTooltip extends React.Component {
         <button
           type="button"
           className="inlineTooltip-button control"
-          title="Close Menu"
+          title="Закрыть меню"
           data-action="inline-menu"
           onClick={ this._toggleScaled }
         >
