@@ -2572,7 +2572,7 @@ function (_React$Component) {
       }, React.createElement("button", {
         type: "button",
         className: "inlineTooltip-button control",
-        title: "Close Menu",
+        title: "\u0417\u0430\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E",
         "data-action": "inline-menu",
         onClick: this._toggleScaled
       }, add()), React.createElement("div", {
@@ -4122,6 +4122,49 @@ var VideoBlockConfig = function VideoBlockConfig() {
   return Object.assign(config, options);
 };
 
+var Divider =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Divider, _React$Component);
+
+  function Divider(props) {
+    var _this;
+
+    _classCallCheck(this, Divider);
+
+    _this = _possibleConstructorReturn(this, (Divider.__proto__ || Object.getPrototypeOf(Divider)).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_this), "render", function () {
+      return React.createElement("span", null);
+    });
+
+    _this.state = {};
+    return _this;
+  }
+
+  return Divider;
+}(React.Component);
+var DividerBlockConfig = function DividerBlockConfig() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var config = {
+    title: 'add divider',
+    type: 'divider',
+    icon: divider,
+    block: Divider,
+    editable: false,
+    renderable: true,
+    breakOnContinuous: false,
+    wrapper_class: "graf graf--divider",
+    selected_class: "is-selected",
+    widget_options: {
+      displayOnInlineTooltip: true,
+      insertion: "insertion",
+      insert_block: "divider"
+    }
+  };
+  return Object.assign(config, options);
+};
+
 var PlaceholderBlock =
 /*#__PURE__*/
 function (_React$Component) {
@@ -4535,7 +4578,7 @@ Dante.defaultProps = {
     '` ': "code-block"
   },
   tooltips: [DanteImagePopoverConfig(), DanteAnchorPopoverConfig(), DanteInlineTooltipConfig(), DanteTooltipConfig()],
-  widgets: [ImageBlockConfig(), EmbedBlockConfig(), VideoBlockConfig(), PlaceholderBlockConfig()]
+  widgets: [ImageBlockConfig(), EmbedBlockConfig(), VideoBlockConfig(), DividerBlockConfig(), PlaceholderBlockConfig()]
 };
 
 module.exports = Dante;
