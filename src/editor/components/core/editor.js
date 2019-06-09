@@ -123,12 +123,12 @@ export default class DanteEditor extends React.Component {
         if (this.props.preview) {
           const dividerIndex = content.blocks.findIndex(block => block.type === 'divider');
           if (dividerIndex > -1) {
-            content = {...content};
+            content = Object.assign({}, content);
             content.blocks = content.blocks.slice();
             content.blocks.length = dividerIndex;
           }
         } else {
-          content = {...content};
+          content = Object.assign({}, content);
           content.blocks = content.blocks.filter(block => block.type !== 'divider');
         }
       }
