@@ -117,8 +117,23 @@ export default class DanteEditor extends React.Component {
 
   initializeState = ()=> {
     let newEditorState = EditorState.createEmpty(this.decorator)
-    if (this.props.content) {
-      newEditorState = EditorState.set(this.decodeEditorContent(this.props.content), {decorator: this.decorator});
+    let content = this.props.content;
+    if (content) {
+      if (this.props.read_only) {
+        if (this.props.preview) {
+          const dividerIndex = content.blocks.findIndex(block => block.type === 'divider');
+          if (dividerIndex > -1) {
+            content = {...content};
+            content.blocks = content.blocks.slice();
+            content.blocks.length = dividerIndex;
+          }
+        } else {
+          content = {...content};
+          content.blocks = content.blocks.filter(block => block.type !== 'divider');
+        }
+      }
+
+      newEditorState = EditorState.set(this.decodeEditorContent(content), {decorator: this.decorator});
     }
     this.onChange(newEditorState)
   }
@@ -156,9 +171,9 @@ export default class DanteEditor extends React.Component {
   }
 
   onChange =(editorState)=> {
-    
+
     //editorState = this.handleUndeletables(editorState)
-  
+
     this.setPreContent()
     this.setState( { editorState } , ()=>{
 
@@ -195,7 +210,7 @@ export default class DanteEditor extends React.Component {
     const undeletable_types = this.props.widgets.filter(
       function(o){ return o.undeletable })
     .map(function(o){ return o.type })
-    
+
     const blockMap = editorState.getCurrentContent().get("blockMap")
 
     const undeletablesMap = blockMap
@@ -316,7 +331,7 @@ export default class DanteEditor extends React.Component {
 
     const read_only = this.props.read_only ? false : null
     const editable = read_only !== null ? read_only : dataBlock.editable
-    
+
     return {
       component: dataBlock.block,
       editable,
@@ -355,7 +370,7 @@ export default class DanteEditor extends React.Component {
   }
 
   getDataBlock =(block)=> {
-    
+
     return this.props.widgets.find(o => {
       return o.type === block.getType()
     })
@@ -386,7 +401,7 @@ export default class DanteEditor extends React.Component {
     if (display == null) {
       display = true
     }
-    
+
     return setTimeout(() => {
       const items = this.tooltipsWithProp(prop)
       //console.log(items)
@@ -455,7 +470,7 @@ export default class DanteEditor extends React.Component {
     }
 
     const newContentState = customHTML2Content(html, this.extendedBlockRenderMap)
-    
+
     const pastedBlocks = newContentState.getBlockMap()
 
     const newState = Modifier.replaceWithFragment(
@@ -855,7 +870,7 @@ export default class DanteEditor extends React.Component {
   hidePopLinkOver = ()=> {
     if(!this.refs.anchor_popover)
       return
-    
+
     return this.hideTimeout = setTimeout(() => {
       return this.refs.anchor_popover.hide()
     }, 300)
@@ -871,7 +886,7 @@ export default class DanteEditor extends React.Component {
   render() {
     return (
       <div suppressContentEditableWarning={ true }>
-        
+
           <div className="postContent">
 
             {
@@ -894,7 +909,7 @@ export default class DanteEditor extends React.Component {
                   />
                 )
               })
-              
+
             }
 
             <div className="section-inner layoutSingleColumn"
@@ -923,7 +938,7 @@ export default class DanteEditor extends React.Component {
             </div>
 
           </div>
-       
+
         {
           this.props.debug
           ? <Debug locks={ this.state.locks } editor={ this } />
